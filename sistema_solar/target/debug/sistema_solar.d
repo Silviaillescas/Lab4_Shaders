@@ -1,0 +1,1 @@
+C:\Users\Silvia\Documents\Rust\Lab4_Shaders\sistema_solar\target\debug\sistema_solar.exe: C:\Users\Silvia\Documents\Rust\Lab4_Shaders\sistema_solar\src\main.rs C:\Users\Silvia\Documents\Rust\Lab4_Shaders\sistema_solar\src\render.rs C:\Users\Silvia\Documents\Rust\Lab4_Shaders\sistema_solar\src\shaders.rs
