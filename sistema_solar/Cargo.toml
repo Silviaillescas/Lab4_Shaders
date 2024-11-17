@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 minifb = "0.22"  # Para la ventana y el framebuffer
 nalgebra = "0.29"  # Para operaciones matemáticas y vectores
+tobj = "3.0" # Para cargar archivos .obj
