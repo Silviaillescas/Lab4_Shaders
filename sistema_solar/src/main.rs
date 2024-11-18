@@ -8,7 +8,7 @@ use std::time::Instant;
 
 use camera::Camera;
 use spaceship::Spaceship;
-use render::render;
+use render::{render, render_skybox}; // Asegúrate de que `render_skybox` esté disponible
 
 const WIDTH: usize = 800;
 const HEIGHT: usize = 600;
@@ -52,10 +52,13 @@ fn main() {
             }
         }
     
-        // Renderizar la escena
+        // Renderizar el skybox primero
+        render_skybox(&mut buffer);
+
+        // Renderizar la escena con la nave y otros objetos
         render(&mut buffer, elapsed_time, &mut camera, &spaceship);
 
+        // Actualizar la ventana con el contenido del buffer
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
     }
-    
 }
