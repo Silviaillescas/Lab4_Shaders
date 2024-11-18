@@ -1,4 +1,4 @@
-use nalgebra::Vector3;
+use nalgebra::{Matrix4, Point3, Vector3};
 
 pub struct Camera {
     pub position: Vector3<f32>,
@@ -9,7 +9,7 @@ impl Camera {
     // Constructor para la cámara
     pub fn new() -> Self {
         Camera {
-            position: Vector3::new(0.0, 0.0, 1.0), // Posición inicial de la cámara
+            position: Vector3::new(0.0, 0.0, 5.0), // Posición inicial de la cámara
             speed: 0.05, // Velocidad de movimiento de la cámara
         }
     }
@@ -25,5 +25,14 @@ impl Camera {
             "backward" => self.position.z += self.speed,
             _ => {},
         }
+    }
+
+    // Método para obtener la matriz de vista
+    pub fn get_view_matrix(&self) -> Matrix4<f32> {
+        Matrix4::look_at_rh(
+            &Point3::new(self.position.x, self.position.y, self.position.z),
+            &Point3::new(0.0, 0.0, 0.0), // Apuntando al origen
+            &Vector3::y_axis(),
+        )
     }
 }
