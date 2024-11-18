@@ -6,8 +6,14 @@ use crate::spaceship::Spaceship;
 const WIDTH: usize = 800;
 const HEIGHT: usize = 600;
 
-// La función render ahora no sobrescribirá el skybox
+// La función render ahora incluye el renderizado de órbitas
 pub fn render(buffer: &mut [u32], time: f32, camera: &mut Camera, spaceship: &Spaceship) {
+    // Renderizar el skybox primero
+    render_skybox(buffer);
+
+    // Renderizar las órbitas de los planetas
+    render_orbits(buffer);
+
     // Renderizar la nave modelada dibujando puntos verdes
     let aspect_ratio: f32 = WIDTH as f32 / HEIGHT as f32;
     let perspective = Matrix4::new_perspective(aspect_ratio, 45.0_f32.to_radians(), 0.1, 100.0);
@@ -74,6 +80,35 @@ pub fn render(buffer: &mut [u32], time: f32, camera: &mut Camera, spaceship: &Sp
     }
 }
 
+// Nueva función para renderizar las órbitas de los planetas mejorada
+pub fn render_orbits(buffer: &mut [u32]) {
+    let center_x = WIDTH as f32 / 2.0;
+    let center_y = HEIGHT as f32 / 2.0;
+
+    // Dibujar varias órbitas circulares con mayor densidad y grosor
+    let radii = [100.0, 150.0, 200.0]; // Radios de las órbitas para cada planeta
+    for &radius in &radii {
+        for angle in (0..360).step_by(1) {  // Reducimos el paso a `1` para que haya más puntos dibujando cada órbita
+            let theta = (angle as f32).to_radians();
+            let x = center_x + radius * theta.cos();
+            let y = center_y + radius * theta.sin();
+
+            // Dibujar un grosor adicional para cada órbita
+            for offset in -1..=1 {
+                let x_offset = x + (offset as f32);
+                let y_offset = y + (offset as f32);
+
+                if x_offset >= 0.0 && x_offset < WIDTH as f32 && y_offset >= 0.0 && y_offset < HEIGHT as f32 {
+                    let index = (y_offset as usize) * WIDTH + (x_offset as usize);
+                    if index < buffer.len() {
+                        buffer[index] = 0xFFFFFF; // Dibujar un punto blanco brillante para la órbita
+                    }
+                }
+            }
+        }
+    }
+}
+
 // Nueva función para renderizar el skybox con estrellas menos densas y más sutiles
 pub fn render_skybox(buffer: &mut [u32]) {
     for y in 0..HEIGHT {
@@ -104,7 +139,6 @@ pub fn skybox_shader(position: Vector3<f32>, x: usize, y: usize) -> Vector3<f32>
         Vector3::new(0.0, 0.0, 0.1) // Azul oscuro para el fondo del cielo
     }
 }
-
 
 pub fn color_to_u32(color: Vector3<f32>) -> u32 {
     let r = (color.x * 255.0).min(255.0).max(0.0) as u32;
