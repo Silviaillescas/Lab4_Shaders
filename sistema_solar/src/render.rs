@@ -47,6 +47,14 @@ pub fn render(buffer: &mut [u32], time: f32, camera: &mut Camera, spaceship: &Sp
     }
 
     // Renderizar todos los objetos del sistema solar sin necesidad de presionar teclas
+    let positions = [
+        Vector3::new(-0.5, 0.0, 0.0),  // Emissive Star
+        Vector3::new(0.5, 0.0, 0.0),   // Rocky Planet
+        Vector3::new(0.0, 0.5, 0.0),   // Gas Giant
+        Vector3::new(0.0, -0.5, 0.0),  // Ring
+        Vector3::new(-0.5, -0.5, 0.0), // Moon
+    ];
+
     for y in 0..HEIGHT {
         for x in 0..WIDTH {
             let position = Vector3::new(
@@ -55,18 +63,20 @@ pub fn render(buffer: &mut [u32], time: f32, camera: &mut Camera, spaceship: &Sp
                 0.0,
             );
 
-            // Aplicar cada uno de los shaders para diferentes tipos de objetos
-            let color_star = emissive_star_shader(position);
-            let color_rocky = rocky_planet_shader(position, time);
-            let color_gas_giant = gas_giant_shader(position, time);
-            let color_ring = ring_shader(position);
-            let color_moon = moon_shader(position, time);
+            let mut combined_color = Vector3::new(0.0, 0.0, 0.0);
 
-            // Combinar los colores sumándolos, limitando el valor máximo para evitar saturación
-            let combined_color = Vector3::new(
-                (color_star.x + color_rocky.x + color_gas_giant.x + color_ring.x + color_moon.x).min(1.0),
-                (color_star.y + color_rocky.y + color_gas_giant.y + color_ring.y + color_moon.y).min(1.0),
-                (color_star.z + color_rocky.z + color_gas_giant.z + color_ring.z + color_moon.z).min(1.0),
+            // Aplicar cada uno de los shaders para diferentes tipos de objetos
+            combined_color += emissive_star_shader(position + positions[0]);
+            combined_color += rocky_planet_shader(position + positions[1], time);
+            combined_color += gas_giant_shader(position + positions[2], time);
+            combined_color += ring_shader(position + positions[3]);
+            combined_color += moon_shader(position + positions[4], time);
+
+            // Limitar el valor máximo para evitar saturación
+            combined_color = Vector3::new(
+                combined_color.x.min(1.0),
+                combined_color.y.min(1.0),
+                combined_color.z.min(1.0),
             );
 
             let index = y * WIDTH + x;
